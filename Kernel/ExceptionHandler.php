@@ -29,6 +29,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\ExceptionDataCollector;
 use Symfony\Component\HttpKernel\DataCollector\ConfigDataCollector;
+use Symfony\Component\HttpKernel\Debug\ExceptionHandler as BaseExceptionHandler;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Exception\FlattenException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -40,7 +41,7 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class ExceptionHandler
+class ExceptionHandler extends BaseExceptionHandler
 {
     private $kernel;
     private $finder;
@@ -51,7 +52,12 @@ class ExceptionHandler
         $this->finder = new ObjectFinder();
     }
 
-    public function register()
+    /**
+     * Az alapértelmezett ```register()``` fv statikus és más paraméterek alapján
+     * működik az eredeti Symfony-s verzióban. Ezért simán átneveztem, hogy ne
+     * legyen összeakadás.
+     */
+    public function selfRegister()
     {
         set_exception_handler(array($this, 'handle'));
     }

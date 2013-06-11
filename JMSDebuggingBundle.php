@@ -35,7 +35,7 @@ class JMSDebuggingBundle extends Bundle
         // do not add exception handler when running from CLI
         if ('cli' !== PHP_SAPI || isset($_SERVER['REMOTE_ADDR'])) {
             $this->exceptionHandler = new ExceptionHandler($kernel);
-            $this->exceptionHandler->register();
+            $this->exceptionHandler->selfRegister();
         }
     }
 
