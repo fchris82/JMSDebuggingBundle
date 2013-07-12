@@ -80,7 +80,7 @@ class TraceableRequestMatcher extends RequestMatcher
         }
 
         foreach ($ips as $ip) {
-            if (!$checkIpClass::checkIp($request->getClientIp(), $ip)) {
+            if (null !== $ip && !$checkIpClass::checkIp($request->getClientIp(), $ip)) {
                 self::$lastMatch = sprintf(
                     'IP did not match. Expected pattern "%s", but got "%s".',
                     $ip,
