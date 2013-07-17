@@ -65,15 +65,30 @@ class TraceableRequestMatcher extends RequestMatcher
             return false;
         }
 
-        $ip = $this->getFieldValue('ip');
-        if (null !== $ip && !$this->checkIp($request->getClientIp(), $ip)) {
-            self::$lastMatch = sprintf(
-                'IP did not match. Expected pattern "%s", but got "%s".',
-                $ip,
-                $request->getClientIp()
-            );
+        // Symfony <= 2.2
+        if (property_exists('Symfony\Component\HttpFoundation\RequestMatcher', 'ip')) {
+            $ips = array($this->getFieldValue('ip'));
+        } else {
+            $ips = $this->getFieldValue('ips');
+        }
 
-            return false;
+        // Symfony <= 2.1
+        if (!class_exists('Symfony\Component\HttpFoundation\IpUtils')) {
+            $checkIpClass = 'Symfony\Component\HttpFoundation\RequestMatcher';
+        } else {
+            $checkIpClass = 'Symfony\Component\HttpFoundation\IpUtils';
+        }
+
+        foreach ($ips as $ip) {
+            if (null !== $ip && !$checkIpClass::checkIp($request->getClientIp(), $ip)) {
+                self::$lastMatch = sprintf(
+                    'IP did not match. Expected pattern "%s", but got "%s".',
+                    $ip,
+                    $request->getClientIp()
+                );
+
+                return false;
+            }
         }
 
         self::$lastMatch = true;
